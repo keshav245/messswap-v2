@@ -54,7 +54,8 @@ export default function PayoutQrUpload({
         <div>
           <p className="font-display text-base font-semibold">Your payout QR</p>
           <p className="mt-1 text-sm text-steel">
-            So the owner can pay you ₹30 per meal used. Only visible to you and the owner.
+            So the owner can pay you ₹30 per meal used. Your payment for qr will be completed within 9-hours.
+            for any problem - messswap@gmail.com
           </p>
         </div>
         <div className="text-right">
