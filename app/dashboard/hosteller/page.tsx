@@ -4,6 +4,7 @@ import DashboardNav from "@/components/DashboardNav";
 import PostListingForm from "@/components/hosteller/PostListingForm";
 import ListingRow from "@/components/hosteller/ListingRow";
 import PayoutQrUpload from "@/components/hosteller/PayoutQrUpload";
+import { ClipboardList, PackageOpen } from "lucide-react";
 
 export default async function HostellerDashboard() {
   const supabase = createClient();
@@ -40,12 +41,18 @@ export default async function HostellerDashboard() {
         <PostListingForm hostellerId={user.id} />
 
         <div>
-          <h2 className="font-display text-lg font-semibold">Your listings</h2>
+          <div className="flex items-center gap-2">
+            <ClipboardList size={17} className="text-steel" strokeWidth={2} />
+            <h2 className="font-display text-lg font-semibold">Your listings</h2>
+          </div>
           <div className="mt-4 space-y-4">
             {(listings ?? []).length === 0 && (
-              <p className="text-sm text-steel">
-                Nothing listed yet — post a spare meal above to get started.
-              </p>
+              <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-steelLight py-10 text-center">
+                <PackageOpen size={22} className="text-steel" strokeWidth={1.5} />
+                <p className="text-sm text-steel">
+                  Nothing listed yet — post a spare meal above to get started.
+                </p>
+              </div>
             )}
             {(listings ?? []).map((listing) => (
               <ListingRow key={listing.id} listing={listing} />

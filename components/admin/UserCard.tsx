@@ -33,15 +33,21 @@ function RoleBadge({ role }: { role: string }) {
 export default function UserCard({ user }: { user: DirectoryUser }) {
   const supabase = createClient();
   const [qrPreview, setQrPreview] = useState<string | null>(null);
+  const [qrLoading, setQrLoading] = useState(!!user.payout_qr_path);
 
   useEffect(() => {
     if (user.role === "hosteller" && user.payout_qr_path) {
-      signedUrl(supabase, "payout-qr", user.payout_qr_path).then(setQrPreview);
+      signedUrl(supabase, "payout-qr", user.payout_qr_path).then((url) => {
+        setQrPreview(url);
+        setQrLoading(false);
+      });
+    } else {
+      setQrLoading(false);
     }
   }, [user.payout_qr_path, user.role]);
 
   return (
-    <div className="stub p-5">
+    <div className="stub stub-interactive p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-steelLight bg-paper font-display text-sm font-semibold text-steel">
@@ -67,7 +73,9 @@ export default function UserCard({ user }: { user: DirectoryUser }) {
 
       {user.role === "hosteller" && (
         <div className="mt-3">
-          {qrPreview ? (
+          {qrLoading ? (
+            <div className="skeleton h-20 w-20 rounded-lg" />
+          ) : qrPreview ? (
             <img src={qrPreview} alt={`${user.full_name}'s payout QR`} className="h-20 w-20 rounded-lg border border-steelLight object-cover" />
           ) : (
             <div className="flex h-20 w-20 items-center justify-center rounded-lg border border-dashed border-steelLight text-center text-[10px] text-steel">

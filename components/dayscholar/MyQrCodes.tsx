@@ -1,4 +1,5 @@
 import { slotLabel } from "@/lib/constants";
+import { Download, ExternalLink, Sparkles } from "lucide-react";
 
 export default function MyQrCodes({
   items,
@@ -9,11 +10,18 @@ export default function MyQrCodes({
 
   return (
     <div>
-      <h2 className="font-display text-lg font-semibold">Your meal QR codes</h2>
+      <div className="flex items-center gap-2">
+        <Sparkles size={18} className="text-turmericDark" strokeWidth={2} />
+        <h2 className="font-display text-lg font-semibold">Your meal QR codes</h2>
+      </div>
       <p className="text-sm text-steel">Approved and ready to use.</p>
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        {items.map((item) => (
-          <div key={item.requestId} className="stub p-5">
+        {items.map((item, i) => (
+          <div
+            key={item.requestId}
+            className="stub stub-interactive animate-in p-5"
+            style={{ animationDelay: `${i * 60}ms` }}
+          >
             <p className="font-display text-base font-semibold">{slotLabel(item.mealSlot)}</p>
             <img
               src={item.qrUrl}
@@ -25,15 +33,17 @@ export default function MyQrCodes({
                 href={item.qrUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="focus-ring flex-1 rounded-full border border-ink/20 px-4 py-2 text-center text-xs font-medium text-ink hover:border-ink/50"
+                className="focus-ring flex flex-1 items-center justify-center gap-1.5 rounded-full border border-ink/20 px-4 py-2 text-center text-xs font-medium text-ink transition-colors hover:border-ink/50 hover:bg-ink/5"
               >
+                <ExternalLink size={13} />
                 Open
               </a>
               <a
                 href={item.qrUrl}
                 download
-                className="focus-ring flex-1 rounded-full bg-ink px-4 py-2 text-center text-xs font-medium text-paper hover:bg-turmericDark"
+                className="focus-ring flex flex-1 items-center justify-center gap-1.5 rounded-full bg-ink px-4 py-2 text-center text-xs font-medium text-paper transition-colors hover:bg-turmericDark"
               >
+                <Download size={13} />
                 Download
               </a>
             </div>

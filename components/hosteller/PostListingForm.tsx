@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { uploadImage } from "@/lib/storage";
 import Button from "@/components/Button";
 import { MEAL_SLOTS, type MealSlot } from "@/lib/constants";
+import { AlertCircle, Loader2, UtensilsCrossed } from "lucide-react";
 
 export default function PostListingForm({ hostellerId }: { hostellerId: string }) {
   const router = useRouter();
@@ -60,10 +61,17 @@ export default function PostListingForm({ hostellerId }: { hostellerId: string }
 
   return (
     <form onSubmit={handleSubmit} className="stub p-5">
-      <p className="font-display text-base font-semibold">Post a spare meal</p>
-      <p className="mt-1 text-sm text-steel">
-        Pick the slot and upload your mess QR as a PNG. It stays live for 12 hours.
-      </p>
+      <div className="flex items-start gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-turmeric/15 text-turmericDark">
+          <UtensilsCrossed size={17} strokeWidth={2} />
+        </span>
+        <div>
+          <p className="font-display text-base font-semibold">Post a spare meal</p>
+          <p className="mt-0.5 text-sm text-steel">
+            Pick the slot and upload your mess QR as a PNG. It stays live for 12 hours.
+          </p>
+        </div>
+      </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {MEAL_SLOTS.map((s) => (
@@ -98,9 +106,15 @@ export default function PostListingForm({ hostellerId }: { hostellerId: string }
         />
       </div>
 
-      {error && <p className="mt-3 text-sm text-chili">{error}</p>}
+      {error && (
+        <div className="mt-3 flex items-start gap-2 rounded-lg bg-chili/5 px-3 py-2.5 text-sm text-chili">
+          <AlertCircle size={16} className="mt-0.5 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
       <Button type="submit" disabled={loading} className="mt-4">
+        {loading && <Loader2 size={16} className="animate-spin" />}
         {loading ? "Posting…" : "Post listing"}
       </Button>
     </form>

@@ -7,6 +7,7 @@ import { signedUrl } from "@/lib/storage";
 import Button from "@/components/Button";
 import { StatusBadge } from "@/components/StatusPill";
 import { slotLabel, slotTime } from "@/lib/constants";
+import { Clock, Trash2 } from "lucide-react";
 
 function timeLeft(expiresAt: string) {
   const ms = new Date(expiresAt).getTime() - Date.now();
@@ -24,6 +25,7 @@ export default function ListingRow({
   const router = useRouter();
   const supabase = createClient();
   const [qrPreview, setQrPreview] = useState<string | null>(null);
+  const [qrLoading, setQrLoading] = useState(true);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -38,6 +40,7 @@ export default function ListingRow({
         const url = supabase.storage.from("qr-codes").getPublicUrl(data.image_path).data.publicUrl;
         if (active) setQrPreview(url);
       }
+      if (active) setQrLoading(false);
     })();
     return () => {
       active = false;
@@ -54,7 +57,7 @@ export default function ListingRow({
   }
 
   return (
-    <div className="stub flex flex-col sm:flex-row overflow-hidden">
+    <div className="stub stub-interactive flex flex-col overflow-hidden sm:flex-row">
       <div className="flex-1 p-5 sm:pr-8">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -63,17 +66,23 @@ export default function ListingRow({
           </div>
           <StatusBadge status={listing.status} />
         </div>
-        <p className="mt-2 text-xs text-steel">
-          {listing.status === "available" ? timeLeft(listing.expires_at) : ""}
-        </p>
+        {listing.status === "available" && (
+          <p className="mt-2 flex items-center gap-1 text-xs text-steel">
+            <Clock size={12} />
+            {timeLeft(listing.expires_at)}
+          </p>
+        )}
         {canDelete && (
-          <Button variant="ghost" className="mt-3 px-3 py-1 text-xs" disabled={busy} onClick={handleDelete}>
+          <Button variant="ghost" className="mt-3 gap-1 px-3 py-1 text-xs" disabled={busy} onClick={handleDelete}>
+            <Trash2 size={13} />
             Delete listing
           </Button>
         )}
       </div>
-      <div className="flex items-center justify-center border-t sm:border-t-0 sm:border-l border-dashed border-steelLight px-5 py-4 sm:w-28">
-        {qrPreview ? (
+      <div className="flex items-center justify-center border-t border-dashed border-steelLight px-5 py-4 sm:w-28 sm:border-l sm:border-t-0">
+        {qrLoading ? (
+          <div className="skeleton h-16 w-16 rounded-lg" />
+        ) : qrPreview ? (
           <img src={qrPreview} alt="Your mess QR" className="h-16 w-16 rounded-lg object-cover" />
         ) : (
           <span className="text-[11px] text-steel">—</span>

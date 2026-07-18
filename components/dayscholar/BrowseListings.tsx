@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { uploadImage } from "@/lib/storage";
 import Button from "@/components/Button";
 import { MEAL_SLOTS, DAY_SCHOLAR_PRICE, slotLabel, slotTime, type MealSlot } from "@/lib/constants";
+import { AlertCircle, IndianRupee, Loader2, SearchX, X } from "lucide-react";
 
 type Listing = {
   id: string;
@@ -92,10 +93,13 @@ export default function BrowseListings({
 
       <div className="mt-4 space-y-3">
         {shown.length === 0 && (
-          <p className="text-sm text-steel">No meals available in this slot right now.</p>
+          <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-steelLight py-10 text-center">
+            <SearchX size={22} className="text-steel" strokeWidth={1.5} />
+            <p className="text-sm text-steel">No meals available in this slot right now.</p>
+          </div>
         )}
         {shown.map((l) => (
-          <div key={l.id} className="stub flex items-center justify-between gap-3 p-5">
+          <div key={l.id} className="stub stub-interactive flex items-center justify-between gap-3 p-5">
             <div>
               <p className="font-display text-base font-semibold">{slotLabel(l.meal_slot)}</p>
               <p className="text-sm text-steel">{slotTime(l.meal_slot)}</p>
@@ -104,7 +108,10 @@ export default function BrowseListings({
               )}
             </div>
             <div className="text-right">
-              <p className="font-display text-lg font-semibold">₹{DAY_SCHOLAR_PRICE}</p>
+              <p className="flex items-center justify-end font-display text-lg font-semibold">
+                <IndianRupee size={15} strokeWidth={2.5} />
+                {DAY_SCHOLAR_PRICE}
+              </p>
               <Button
                 variant="primary"
                 className="mt-2 px-4 py-1.5 text-xs"
@@ -121,11 +128,20 @@ export default function BrowseListings({
       </div>
 
       {claiming && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-4 sm:items-center">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6">
-            <p className="font-display text-lg font-semibold">
-              {slotLabel(claiming.meal_slot)} · ₹{DAY_SCHOLAR_PRICE}
-            </p>
+        <div className="animate-in fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-4 backdrop-blur-sm sm:items-center">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+            <div className="flex items-start justify-between">
+              <p className="font-display text-lg font-semibold">
+                {slotLabel(claiming.meal_slot)} · ₹{DAY_SCHOLAR_PRICE}
+              </p>
+              <button
+                onClick={() => setClaiming(null)}
+                className="focus-ring rounded-full p-1 text-steel hover:bg-paper hover:text-ink"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
             <p className="mt-1 text-sm text-steel">
               Scan the owner's QR below, pay ₹{DAY_SCHOLAR_PRICE}, then upload your payment
               screenshot to confirm.
@@ -138,9 +154,10 @@ export default function BrowseListings({
                 className="mx-auto mt-4 h-44 w-44 rounded-lg border border-steelLight object-cover"
               />
             ) : (
-              <p className="mt-4 text-sm text-chili">
-                The owner hasn't uploaded a payment QR yet — check back shortly.
-              </p>
+              <div className="mt-4 flex items-start gap-2 rounded-lg bg-chili/5 px-3 py-2.5 text-sm text-chili">
+                <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                <span>The owner hasn't uploaded a payment QR yet — check back shortly.</span>
+              </div>
             )}
 
             <div className="mt-4">
@@ -155,10 +172,16 @@ export default function BrowseListings({
               />
             </div>
 
-            {error && <p className="mt-3 text-sm text-chili">{error}</p>}
+            {error && (
+              <div className="mt-3 flex items-start gap-2 rounded-lg bg-chili/5 px-3 py-2.5 text-sm text-chili">
+                <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
 
             <div className="mt-5 flex gap-2">
               <Button variant="primary" disabled={submitting} onClick={submitRequest} className="flex-1">
+                {submitting && <Loader2 size={16} className="animate-spin" />}
                 {submitting ? "Submitting…" : "Submit request"}
               </Button>
               <Button variant="ghost" onClick={() => setClaiming(null)}>

@@ -4,6 +4,7 @@ import DashboardNav from "@/components/DashboardNav";
 import BrowseListings from "@/components/dayscholar/BrowseListings";
 import MyQrCodes from "@/components/dayscholar/MyQrCodes";
 import RequestHistory from "@/components/dayscholar/RequestHistory";
+import { UtensilsCrossed } from "lucide-react";
 
 export default async function DayScholarDashboard() {
   const supabase = createClient();
@@ -81,7 +82,10 @@ export default async function DayScholarDashboard() {
         <MyQrCodes items={qrItems} />
 
         <div>
-          <h2 className="font-display text-lg font-semibold">Browse meals</h2>
+          <h2 className="flex items-center gap-2 font-display text-lg font-semibold">
+            <UtensilsCrossed size={17} className="text-steel" strokeWidth={2} />
+            Browse meals
+          </h2>
           <div className="mt-4">
             <BrowseListings
               listings={(listings ?? []) as any}

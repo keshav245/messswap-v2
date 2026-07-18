@@ -4,12 +4,19 @@ import { useMemo, useState } from "react";
 import OwnerSettings from "@/components/admin/OwnerSettings";
 import UserCard, { type DirectoryUser } from "@/components/admin/UserCard";
 import RequestReviewCard, { type AdminRequest } from "@/components/admin/RequestReviewCard";
+import { CheckCircle2, Clock3, ClipboardList, Search, SearchX, Shield, Users, XCircle } from "lucide-react";
 
 const roleSearchLabel: Record<string, string> = {
   hosteller: "hostler",
   day_scholar: "day scholar",
   admin: "owner",
 };
+
+const tabIcons = {
+  pending: Clock3,
+  approved: CheckCircle2,
+  rejected: XCircle,
+} as const;
 
 export default function OwnerConsole({
   users,
@@ -46,58 +53,86 @@ export default function OwnerConsole({
 
   return (
     <div>
-      <h1 className="font-display text-3xl font-semibold">Owner console</h1>
-      <p className="mt-1 text-sm text-steel">
-        Review day scholar requests, verify payment, approve to release the mess QR.
-      </p>
+      <div className="flex items-center gap-3">
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-ink text-paper">
+          <Shield size={20} strokeWidth={2} />
+        </span>
+        <div>
+          <h1 className="font-display text-2xl font-semibold sm:text-3xl">Owner console</h1>
+          <p className="text-sm text-steel">
+            Review requests, verify payment, approve to release the mess QR.
+          </p>
+        </div>
+      </div>
 
       <div className="mt-8">
         <OwnerSettings currentQrUrl={ownerQrUrl} />
       </div>
 
       <div className="mt-10">
-        <div className="flex gap-2">
-          {(["pending", "approved", "rejected"] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`focus-ring flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium capitalize transition-colors ${
-                tab === t ? "bg-chili text-white" : "border border-steelLight bg-white text-ink"
-              }`}
-            >
-              {t}
-              <span className={`rounded-full px-2 py-0.5 text-xs ${tab === t ? "bg-white/20" : "bg-paper"}`}>
-                {counts[t]}
-              </span>
-            </button>
-          ))}
+        <div className="flex flex-wrap gap-2">
+          {(["pending", "approved", "rejected"] as const).map((t) => {
+            const Icon = tabIcons[t];
+            return (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`focus-ring flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium capitalize transition-colors ${
+                  tab === t ? "bg-chili text-white" : "border border-steelLight bg-white text-ink hover:border-steel/30"
+                }`}
+              >
+                <Icon size={14} />
+                {t}
+                <span className={`rounded-full px-2 py-0.5 text-xs ${tab === t ? "bg-white/20" : "bg-paper"}`}>
+                  {counts[t]}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="mt-4 space-y-3">
           {shownRequests.length > 0 ? (
-            shownRequests.map((r) => <RequestReviewCard key={r.id} request={r} />)
+            shownRequests.map((r, i) => (
+              <div key={r.id} className="animate-in" style={{ animationDelay: `${i * 40}ms` }}>
+                <RequestReviewCard request={r} />
+              </div>
+            ))
           ) : (
-            <div className="rounded-lg border border-dashed border-steelLight py-10 text-center text-sm text-steel">
-              No {tab} requests.
+            <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-steelLight py-10 text-center">
+              <ClipboardList size={22} className="text-steel" strokeWidth={1.5} />
+              <p className="text-sm text-steel">No {tab} requests.</p>
             </div>
           )}
         </div>
       </div>
 
       <div className="mt-10">
-        <h2 className="font-display text-lg font-semibold">Search users</h2>
+        <div className="flex items-center gap-2">
+          <Users size={17} className="text-steel" strokeWidth={2} />
+          <h2 className="font-display text-lg font-semibold">Search users</h2>
+        </div>
         <p className="text-sm text-steel">Look up hostellers and day scholars and view their details.</p>
-        <input
-          className="focus-ring mt-3 w-full rounded-lg border border-steelLight bg-white px-4 py-3 text-sm"
-          placeholder="Search by name, email, mobile, role…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="relative mt-3">
+          <Search
+            size={16}
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-steel/50"
+          />
+          <input
+            className="focus-ring w-full rounded-lg border border-steelLight bg-white py-3 pl-10 pr-4 text-sm"
+            placeholder="Search by name, email, mobile, role…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {filteredUsers.length > 0 ? (
             filteredUsers.map((u) => <UserCard key={u.id} user={u} />)
           ) : (
-            <p className="text-sm text-steel sm:col-span-2">No users match that search.</p>
+            <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-steelLight py-10 text-center sm:col-span-2">
+              <SearchX size={20} className="text-steel" strokeWidth={1.5} />
+              <p className="text-sm text-steel">No users match that search.</p>
+            </div>
           )}
         </div>
       </div>

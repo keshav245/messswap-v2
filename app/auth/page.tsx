@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/Button";
 import { Field, Input, Select } from "@/components/Input";
+import { AlertCircle, Loader2, Ticket } from "lucide-react";
 
 function AuthForm() {
   const router = useRouter();
@@ -59,94 +60,127 @@ function AuthForm() {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-16">
-      <Link href="/" className="font-display text-lg font-semibold tracking-tight">
-        MessSwap
-      </Link>
+    <div className="flex min-h-screen items-center justify-center px-6 py-16">
+      <div className="w-full max-w-md">
+        <Link href="/" className="flex items-center justify-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-ink text-paper">
+            <Ticket size={18} strokeWidth={2.25} />
+          </span>
+          <span className="font-display text-xl font-semibold tracking-tight">MessSwap</span>
+        </Link>
 
-      <div className="mt-8 flex rounded-full border border-steelLight bg-white p-1 text-sm">
-        <button
-          className={`focus-ring flex-1 rounded-full py-2 font-medium transition-colors ${
-            mode === "signin" ? "bg-ink text-paper" : "text-steel"
-          }`}
-          onClick={() => setMode("signin")}
-          type="button"
-        >
-          Sign in
-        </button>
-        <button
-          className={`focus-ring flex-1 rounded-full py-2 font-medium transition-colors ${
-            mode === "register" ? "bg-ink text-paper" : "text-steel"
-          }`}
-          onClick={() => setMode("register")}
-          type="button"
-        >
-          Register
-        </button>
-      </div>
+        <div className="animate-in stub mt-8 p-6 sm:p-8">
+          <div className="flex rounded-full border border-steelLight bg-paper p-1 text-sm">
+            <button
+              className={`focus-ring flex-1 rounded-full py-2 font-medium transition-colors ${
+                mode === "signin" ? "bg-ink text-paper" : "text-steel hover:text-ink"
+              }`}
+              onClick={() => setMode("signin")}
+              type="button"
+            >
+              Sign in
+            </button>
+            <button
+              className={`focus-ring flex-1 rounded-full py-2 font-medium transition-colors ${
+                mode === "register" ? "bg-ink text-paper" : "text-steel hover:text-ink"
+              }`}
+              onClick={() => setMode("register")}
+              type="button"
+            >
+              Register
+            </button>
+          </div>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        {mode === "register" && (
-          <>
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            {mode === "register" && (
+              <>
+                <div>
+                  <Field>I am a</Field>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setRole("day_scholar")}
+                      className={`focus-ring rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
+                        role === "day_scholar"
+                          ? "border-ink bg-ink text-paper"
+                          : "border-steelLight bg-white text-ink hover:border-ink/40"
+                      }`}
+                    >
+                      Day scholar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRole("hosteller")}
+                      className={`focus-ring rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors ${
+                        role === "hosteller"
+                          ? "border-ink bg-ink text-paper"
+                          : "border-steelLight bg-white text-ink hover:border-ink/40"
+                      }`}
+                    >
+                      Hosteller
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <Field htmlFor="fullName">Full name</Field>
+                  <Input
+                    id="fullName"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <Field htmlFor="phone">Phone (optional)</Field>
+                  <Input
+                    id="phone"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="For coordinating handoffs"
+                  />
+                </div>
+              </>
+            )}
+
             <div>
-              <Field>I am a</Field>
-              <Select value={role} onChange={(e) => setRole(e.target.value as typeof role)}>
-                <option value="day_scholar">Day scholar (buying meals)</option>
-                <option value="hosteller">Hosteller (listing meals)</option>
-              </Select>
-            </div>
-            <div>
-              <Field htmlFor="fullName">Full name</Field>
+              <Field htmlFor="email">Email</Field>
               <Input
-                id="fullName"
+                id="email"
+                type="email"
                 required
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Your name"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@college.edu"
               />
             </div>
             <div>
-              <Field htmlFor="phone">Phone (optional)</Field>
+              <Field htmlFor="password">Password</Field>
               <Input
-                id="phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="For coordinating handoffs"
+                id="password"
+                type="password"
+                required
+                minLength={6}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="At least 6 characters"
               />
             </div>
-          </>
-        )}
 
-        <div>
-          <Field htmlFor="email">Email</Field>
-          <Input
-            id="email"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@college.edu"
-          />
+            {error && (
+              <div className="flex items-start gap-2 rounded-lg bg-chili/5 px-3 py-2.5 text-sm text-chili">
+                <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading && <Loader2 size={16} className="animate-spin" />}
+              {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
+            </Button>
+          </form>
         </div>
-        <div>
-          <Field htmlFor="password">Password</Field>
-          <Input
-            id="password"
-            type="password"
-            required
-            minLength={6}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="At least 6 characters"
-          />
-        </div>
-
-        {error && <p className="text-sm text-chili">{error}</p>}
-
-        <Button type="submit" disabled={loading} className="w-full">
-          {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
-        </Button>
-      </form>
+      </div>
     </div>
   );
 }
