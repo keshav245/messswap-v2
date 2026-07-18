@@ -32,8 +32,8 @@ export default function Home() {
       <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
         <span className="flex items-center gap-2.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="MessSwap" className="h-8 w-8 rounded-lg object-cover" />
-          <span className="font-display text-lg font-semibold tracking-tight">MessSwap</span>
+          <img src="/logo.png" alt="MessSwap" className="h-11 w-11 rounded-lg object-cover" />
+          <span className="font-display text-2xl font-semibold tracking-tight">MessSwap</span>
         </span>
         <Link href="/auth">
           <Button variant="secondary">Sign in</Button>
